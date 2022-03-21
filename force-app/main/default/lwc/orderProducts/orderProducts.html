@@ -1,0 +1,34 @@
+<template>
+    <div class="slds-grid">
+        <div class="slds-col">
+            <template if:false={isActivated}>
+                {status}
+                <lightning-button 
+                    variant="brand" 
+                    label="Activate"
+                    title="Activate" 
+                    class="slds-m-left_x-small"
+                    onclick={getActivated}>
+                </lightning-button>
+            </template>   
+        </div>
+    </div>
+    <div class="slds-grid">
+        <div class="slds-col">
+            <template if:true={isOrderItemsAvailable}>
+                <lightning-datatable 
+                    data={orderItemList} 
+                    columns={columns} 
+                    key-field="Id"
+                    hide-checkbox-column="true"
+                    hide-default-actions = "true"
+                    enable-infinite-loading="true"
+                    >
+                </lightning-datatable>
+            </template>
+            <template if:false={isOrderItemsAvailable}>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </template>
+        </div>
+    </div>    
+</template>

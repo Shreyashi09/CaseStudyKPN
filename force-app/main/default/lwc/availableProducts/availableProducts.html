@@ -1,0 +1,34 @@
+<template>
+    <div class="slds-grid">
+        <div class="slds-col">
+            <lightning-button 
+                variant="brand" 
+                label="Add Products"
+                 title="Add Products" 
+                 icon-name="utility:add" 
+                 class="slds-m-left_x-small"
+                 onclick={addSelectedProducts}>
+            </lightning-button>
+        </div>
+    </div>
+    <div class="slds-grid">
+        <div class="slds-col">
+            <template if:true={isProductsAvailable}>
+                <lightning-datatable 
+                    data={availableItemList} 
+                    columns={columns} 
+                    key-field="Id"
+                    hide-default-actions = "true"
+                    onrowselection={getSelectedProducts}
+                    sorted-by={sortBy}
+                    sorted-direction={sortDir}
+                    onsort={performColumnSorting}
+                    >
+                </lightning-datatable>
+            </template>
+            <template if:false={isProductsAvailable}>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </template>
+        </div>
+    </div>
+</template>

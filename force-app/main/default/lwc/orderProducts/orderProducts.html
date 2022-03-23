@@ -1,8 +1,7 @@
 <template>
-    <div class="slds-grid">
+    <div class="slds-grid slds-p-bottom_x-small">
         <div class="slds-col">
             <template if:false={isActivated}>
-                {status}
                 <lightning-button 
                     variant="brand" 
                     label="Activate"
@@ -23,6 +22,10 @@
                     hide-checkbox-column="true"
                     hide-default-actions = "true"
                     enable-infinite-loading="true"
+                    show-row-number-column="true"
+                    sorted-by={sortBy}
+                    sorted-direction={sortDirection}
+                    onsort={performColumnSorting}
                     >
                 </lightning-datatable>
             </template>

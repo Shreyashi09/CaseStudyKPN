@@ -1,19 +1,24 @@
 public with sharing class OrderProductsCtrl {
-    
+    @AuraEnabled public static Order order {get;set;}
+    @AuraEnabled public static String response {get;set;}
+
     @AuraEnabled
     public static List<OrderItem> getOrderItemsList(String ordId){
         ProductsHelper phInstance = ProductsHelper.getInstance();
-        system.System.debug('from order ctrl and ord id ---------->'+ordId);
+        system.debug('from order ctrl and ord id ---------->'+ordId);
         return phInstance.getOrderItemsFromOrder(ordId);
     }
     @AuraEnabled
     public static String updateStatus(String orderId){
         ProductsHelper phInstance = ProductsHelper.getInstance();
-        return phInstance.updateStatus(orderId);
+        response = phInstance.updateStatus(orderId);
+        return response;
     }
-    @AuraEnabled(cacheable=true)
-    public static Boolean getOrderStatus(String orderId){
+    @AuraEnabled
+    public static Order getOrder(String orderId){
         ProductsHelper phInstance = ProductsHelper.getInstance();
-        return phInstance.getOrderStatus(orderId);
+        system.debug('from getOrder method -------->'+phInstance.getOrder(orderId));
+        order= phInstance.getOrder(orderId);
+        return order;
     }
 }

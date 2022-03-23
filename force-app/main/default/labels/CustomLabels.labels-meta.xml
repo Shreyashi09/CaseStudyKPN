@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>ADD_PRODUCT_SUCCESS_MESSAGE</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ADD_PRODUCT_SUCCESS_MESSAGE</shortDescription>
+        <value>Products has been added successfully.</value>
+    </labels>
+    <labels>
+        <fullName>ADD_PRODUCT_WARNING_MESSAGE</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ADD_PRODUCT_WARNING_MESSAGE</shortDescription>
+        <value>Please select at least one product.</value>
+    </labels>
+    <labels>
+        <fullName>ERROR_MESSAGE</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ERROR_MESSAGE</shortDescription>
+        <value>Please verify, there is an issue.</value>
+    </labels>
+    <labels>
+        <fullName>ERROR_STATUS</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ERROR_STATUS</shortDescription>
+        <value>ERROR</value>
+    </labels>
+    <labels>
+        <fullName>ORDER_ACTIVATION_SUCCESS_MESSAGE</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ORDER_ACTIVATION_SUCCESS_MESSAGE</shortDescription>
+        <value>Order and related order items are activated now.</value>
+    </labels>
+    <labels>
+        <fullName>WARNING_STATUS</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>WARNING_STATUS</shortDescription>
+        <value>WARNING</value>
+    </labels>
+</CustomLabels>

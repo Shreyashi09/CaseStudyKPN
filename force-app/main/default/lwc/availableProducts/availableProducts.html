@@ -1,14 +1,16 @@
 <template>
-    <div class="slds-grid">
+    <div class="slds-grid slds-p-bottom_x-small">
         <div class="slds-col">
-            <lightning-button 
-                variant="brand" 
-                label="Add Products"
-                 title="Add Products" 
-                 icon-name="utility:add" 
-                 class="slds-m-left_x-small"
-                 onclick={addSelectedProducts}>
-            </lightning-button>
+            <template if:false={isActivated}>
+                <lightning-button 
+                    variant="brand" 
+                    label="Add Products"
+                    title="Add Products" 
+                    icon-name="utility:add" 
+                    class="slds-m-left_x-small"
+                    onclick={addSelectedProducts}>
+                </lightning-button>
+            </template>
         </div>
     </div>
     <div class="slds-grid">
@@ -19,9 +21,10 @@
                     columns={columns} 
                     key-field="Id"
                     hide-default-actions = "true"
+                    hide-checkbox-column={isHideColumnCheckbox}
                     onrowselection={getSelectedProducts}
                     sorted-by={sortBy}
-                    sorted-direction={sortDir}
+                    sorted-direction={sortDirection}
                     onsort={performColumnSorting}
                     >
                 </lightning-datatable>

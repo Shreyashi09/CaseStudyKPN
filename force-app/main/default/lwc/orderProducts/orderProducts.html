@@ -15,8 +15,13 @@
     <div class="slds-grid">
         <div class="slds-col">
             <template if:true={isOrderItemsAvailable}>
+                <c-pagination-custom records={orderItemList} 
+                    total-records={orderItemList.length}
+                    onpaginatorchange={handlePaginatorChange}>
+                </c-pagination-custom>
+
                 <lightning-datatable 
-                    data={orderItemList} 
+                    data={recordsToDisplay} 
                     columns={columns} 
                     key-field="Id"
                     hide-checkbox-column="true"

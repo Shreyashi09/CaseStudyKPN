@@ -42,10 +42,9 @@ export default class AvailableProducts extends LightningElement {
         if(data){
             let productTableData = JSON.parse( JSON.stringify( data ) );
             productTableData = productTableData.map( row => {
-                return { ...row, Name: row.Product2.Name, Family: row.Product2.Family };
+                return { ...row, Name: row.Product2.Name};
             })
             this.availableItemList = productTableData;
-            console.log(productTableData);
             this.error = undefined;
             this.isProductsAvailable = true;
 
@@ -104,10 +103,8 @@ export default class AvailableProducts extends LightningElement {
     }
     getSelectedProducts(event){
         this.selectedProducts = event.detail.selectedRows;
-        console.log('selected products ------->'+this.selectedProducts);
     }
     addSelectedProducts(event){
-        console.log('from addSelectedProducts-------->')
         let orderId = this.recordId;
         let selectedProductsList = this.selectedProducts;
         let priceBookList = [];
@@ -122,8 +119,6 @@ export default class AvailableProducts extends LightningElement {
                 pBEntry.UnitPrice = selectedProduct.UnitPrice;
                 priceBookList.push(pBEntry);
             });
-            console.log('priceBookList----->'+priceBookList.length);
-
             // call apex method
             addProducts({priceBookList:priceBookList,OrderId:orderId})
             .then(result =>{

@@ -1,23 +1,42 @@
 import { LightningElement,wire,api } from 'lwc';
 import getAvailableProducts from '@salesforce/apex/AvailableProductsCtrl.getAvailableProducts';
 import addProducts from '@salesforce/apex/AvailableProductsCtrl.addProducts';
+import getOrderStatus from '@salesforce/apex/AvailableProductsCtrl.getOrder';
+import PRODUCT_ADD_SUCCESS_MESSAGE from '@salesforce/label/c.ADD_PRODUCT_SUCCESS_MESSAGE';
+import ERROR_MESSAGE from '@salesforce/label/c.ERROR_MESSAGE';
+import ADD_PRODUCT_WARNING_MESSAGE from '@salesforce/label/c.ADD_PRODUCT_WARNING_MESSAGE';
+import ERROR_STATUS from '@salesforce/label/c.ERROR_STATUS';
+import WARNING_STATUS from '@salesforce/label/c.WARNING_STATUS';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { publish,MessageContext,APPLICATION_SCOPE } from 'lightning/messageService';
 import addOrderItemEvent from '@salesforce/messageChannel/addOrderItemEvent__c';
 //Available Product Table Columns
 const availableItemsColumns = [{label: 'Name', fieldName: 'Name', sortable: "true"},
                                {label: 'List Price', fieldName: 'UnitPrice', type: 'Currency',sortable: "true"}];
+// Order status on page load
+const ORDER_STATUS = 'Activated';
+
 export default class AvailableProducts extends LightningElement {
+        //custom label
+        labels ={
+            PRODUCT_ADD_SUCCESS_MESSAGE,
+            ERROR_MESSAGE,
+            ADD_PRODUCT_WARNING_MESSAGE,
+            ERROR_STATUS,
+            WARNING_STATUS	
+        };
     columns = availableItemsColumns;
     @api recordId;
     error;
+    isActivated = false //it is used to verify the order status on page load
+    isHideColumnCheckbox = false;
     isProductsAvailable = false;
     availableItemList = []; //is it used to keep available table data
     selectedProducts = [];
     @wire(MessageContext) messageContext;
-    //  sorting attributes
+    //sorting attributes
     sortBy;
-    sortDir;
+    sortDirection;
     @wire(getAvailableProducts,{ordId: '$recordId'})
     wiredavailableItemData({ data, error }){
         if(data){
@@ -41,22 +60,22 @@ export default class AvailableProducts extends LightningElement {
     //sorting funstions
     performColumnSorting(event){
         this.sortBy = event.detail.fieldName;
-        this.sortDir = event.detail.sortDir;
-        this.sortData(this.sortBy,this.sortDir);
+        this.sortDirection = event.detail.sortDirection;
+        this.sortData(this.sortBy,this.sortDirection);
     }
     // sortData function --- used for sorting 
     sortData(fieldName,direction){
         let prodTable = JSON.parse(JSON.stringify(this.availableItemList));
         //return the value sorted in the field
-        let key_value = (val) =>{
+        let key_Value = (val) =>{
             return val[fieldName];
         }
         //checking reverse direction 
         let isReverse = direction === 'asc'?1:-1;
         //sorting data
         prodTable.sort((x,y) =>{
-            x = key_value(x) ? key_value(x): '';
-            y = key_value(y) ? key_value(y): ''; // handling null values
+            x = key_Value(x) ? key_Value(x) : '';
+            y = key_Value(y) ? key_Value(y) : ''; // handling null values
             //soritng values based on direction
             return isReverse * ((x>y)-(y>x));
         });
@@ -64,27 +83,23 @@ export default class AvailableProducts extends LightningElement {
         this.availableItemList = prodTable;
     }
     connectedCallback(){
-        //this.getAvailableProductsTableData();
+        this.getOrderStatusOnLoad();
     }
-    getAvailableProductsTableData(){
-        let tableData = [];
-        getAvailableProducts({ordId : this.recordId})
+
+    // hide Add Products and multi select checkbox from Add Product table when order status is Activated
+    getOrderStatusOnLoad(){
+        getOrderStatus({orderId: this.recordId})
         .then(result =>{
-            if(result.length > 0){
-                result.forEach(item =>{
-                    let dataToTable = {}
-                    dataToTable.Name = item.Product2.Name;
-                    dataToTable.UnitPrice = item.UnitPrice;
-                    tableData.push(dataToTable);
-                })
+            if(result.Status === ORDER_STATUS){
+                this.isActivated = true;
+                this.isHideColumnCheckbox = true;
             }
-            this.availableItemList = tableData;
-            this.error = undefined;
-            this.isProductsAvailable = true;
+            else{
+                this.isActivated = false;
+                this.isHideColumnCheckbox = false;
+            }
         }).catch(error =>{
-            this.availableItemList = undefined;
-            this.error = error;
-            this.isProductsAvailable = true;
+            console.log('error is ------>'+JSON.parse( JSON.stringify( error ) ));
         });
     }
     getSelectedProducts(event){
@@ -96,14 +111,11 @@ export default class AvailableProducts extends LightningElement {
         let orderId = this.recordId;
         let selectedProductsList = this.selectedProducts;
         let priceBookList = [];
-        console.log('from addSelectedProducts-------->'+selectedProductsList.length);
 
         if(selectedProductsList.length == 0){
-            console.log('no products to be added');
-            this.notifyToUser('WARNING','PLEASE SELECT AT LEAST ONE PRODUCT');
+            this.notifyToUser(this.labels.WARNING_STATUS,this.labels.ADD_PRODUCT_WARNING_MESSAGE);
         }
         else{
-            console.log('from else----->');
             selectedProductsList.forEach(selectedProduct => {
                 let pBEntry = {'sobjecttype':'PricebookEntry'};
                 pBEntry.Id = selectedProduct.Id;
@@ -115,16 +127,10 @@ export default class AvailableProducts extends LightningElement {
             // call apex method
             addProducts({priceBookList:priceBookList,OrderId:orderId})
             .then(result =>{
-                console.log('items added'+result);
-                this.notifyToUser('SUCCESS','SELECTED PRODUCTS ARE ADDED');
-                const payload = {recordId: event.target}
-                // console.log('this.messageContext-------->'+this.messageContext);
-                // console.log('this.addOrderItemEvent-------->'+addOrderItemEvent);
-                publish(this.messageContext,addOrderItemEvent,payload);
-                console.log('after publish ---->');
+                this.notifyToUser(result,this.labels.PRODUCT_ADD_SUCCESS_MESSAGE);
+                publish(this.messageContext,addOrderItemEvent);
             }).catch( error =>{
-                console.log('error------>'+error);
-                this.notifyToUser('ERROR','SORRY THERE IS AN ISSUE');
+                this.notifyToUser(this.labels.ERROR_STATUS,this.labels.ERROR_MESSAGE);
             });
         }
     }

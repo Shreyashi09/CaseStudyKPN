@@ -1,4 +1,7 @@
 public with sharing class AvailableProductsCtrl {
+    @AuraEnabled public static Order order {get;set;}
+    @AuraEnabled public static String status {get;set;}
+
     @AuraEnabled(cacheable=true)
     public static List<PricebookEntry> getAvailableProducts(String ordId){
         ProductsHelper phInstance = ProductsHelper.getInstance();
@@ -11,7 +14,13 @@ public with sharing class AvailableProductsCtrl {
     @AuraEnabled
     public static string addProducts(List<PricebookEntry> priceBookList,String OrderId){
         ProductsHelper phInstance = ProductsHelper.getInstance();
-        return phInstance.addProducts(priceBookList,OrderId);
+        status = phInstance.addProducts(priceBookList,OrderId);
+        return status;
     }
-
+    @AuraEnabled
+    public static Order getOrder(String orderId){
+        ProductsHelper phInstance = ProductsHelper.getInstance();
+        order= phInstance.getOrder(orderId);
+        return order;
+    }
 }

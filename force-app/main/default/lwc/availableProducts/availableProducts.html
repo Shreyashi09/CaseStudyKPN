@@ -16,8 +16,12 @@
     <div class="slds-grid">
         <div class="slds-col">
             <template if:true={isProductsAvailable}>
+                <c-pagination-custom records={availableItemList} 
+                    total-records={availableItemList.length}
+                    onpaginatorchange={handlePaginatorChange}>
+                </c-pagination-custom>
                 <lightning-datatable 
-                    data={availableItemList} 
+                    data={recordsToDisplay} 
                     columns={columns} 
                     key-field="Id"
                     hide-default-actions = "true"
@@ -26,6 +30,7 @@
                     sorted-by={sortBy}
                     sorted-direction={sortDirection}
                     onsort={performColumnSorting}
+                    show-row-number-column
                     >
                 </lightning-datatable>
             </template>

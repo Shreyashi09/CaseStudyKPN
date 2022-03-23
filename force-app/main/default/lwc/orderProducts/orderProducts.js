@@ -31,6 +31,11 @@ export default class OrderProducts extends LightningElement {
     //sorting attributes
     sortDirection;
     sortBy;
+    //pagination attributes
+    rowNumberOffset;
+    recordsToDisplay = [];
+    eventClone={};
+
     // to get the message context
     @wire(MessageContext) messageContext;    
     connectedCallback(){
@@ -69,12 +74,14 @@ export default class OrderProducts extends LightningElement {
         getOrderItems({ordId: this.recordId})
         .then(result => {
             if(result.length > 0){
+                let i = 1;
                 result.forEach(orderItem => {
                     let orderItemTable = {}
                     orderItemTable.Name = orderItem.Product2.Name;
                     orderItemTable.UnitPrice = orderItem.UnitPrice;
                     orderItemTable.Quantity = orderItem.Quantity;
                     orderItemTable.TotalPrice = orderItem.TotalPrice;
+                    orderItemTable.rowNumber = ''+ i++;
                     tableData.push(orderItemTable);
                 });
             }
@@ -87,6 +94,11 @@ export default class OrderProducts extends LightningElement {
             this.isOrderItemsAvailable = true;
         });
     }
+    handlePaginatorChange(event){
+        this.eventClone = Object.assign(this.eventClone, event);
+        this.recordsToDisplay = event.detail;
+        this.rowNumberOffset = this.recordsToDisplay[0].rowNumber-1;
+    }
     //sorting funstions
     performColumnSorting(event){
         this.sortBy = event.detail.fieldName;
@@ -95,7 +107,7 @@ export default class OrderProducts extends LightningElement {
     }
     // sortData function --- used for sorting 
     sortData(fieldName,direction){
-        let oiTable = JSON.parse(JSON.stringify(this.orderItemList));
+        let oiTable = JSON.parse(JSON.stringify(this.recordsToDisplay));
         //return the value sorted in the field
         let key_Value = (val) =>{
             return val[fieldName];
@@ -110,7 +122,7 @@ export default class OrderProducts extends LightningElement {
             return isReverse * ((x>y)-(y>x));
         });
         //set the sorted data into table
-        this.orderItemList = oiTable;
+        this.recordsToDisplay = oiTable;
     }   
     // listen and handle the addOrderItemEvent
     subscribeToMessageChannel() {
@@ -127,6 +139,7 @@ export default class OrderProducts extends LightningElement {
     handleMessage(){
         this.isOrderItemsAvailable = false;
         this.getOrderItemsTableData();
+        handlePaginatorChange(this.eventClone);
         this.isOrderItemsAvailable = true;
     }
     notifyToUser(status,message){

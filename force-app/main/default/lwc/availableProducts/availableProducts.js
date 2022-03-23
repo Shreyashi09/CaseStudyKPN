@@ -3,9 +3,7 @@ import getAvailableProducts from '@salesforce/apex/AvailableProductsCtrl.getAvai
 import addProducts from '@salesforce/apex/AvailableProductsCtrl.addProducts';
 import getOrderStatus from '@salesforce/apex/AvailableProductsCtrl.getOrder';
 import PRODUCT_ADD_SUCCESS_MESSAGE from '@salesforce/label/c.ADD_PRODUCT_SUCCESS_MESSAGE';
-import ERROR_MESSAGE from '@salesforce/label/c.ERROR_MESSAGE';
 import ADD_PRODUCT_WARNING_MESSAGE from '@salesforce/label/c.ADD_PRODUCT_WARNING_MESSAGE';
-import ERROR_STATUS from '@salesforce/label/c.ERROR_STATUS';
 import WARNING_STATUS from '@salesforce/label/c.WARNING_STATUS';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { publish,MessageContext,APPLICATION_SCOPE } from 'lightning/messageService';
@@ -20,9 +18,7 @@ export default class AvailableProducts extends LightningElement {
         //custom label
         labels ={
             PRODUCT_ADD_SUCCESS_MESSAGE,
-            ERROR_MESSAGE,
             ADD_PRODUCT_WARNING_MESSAGE,
-            ERROR_STATUS,
             WARNING_STATUS	
         };
     columns = availableItemsColumns;
@@ -37,11 +33,17 @@ export default class AvailableProducts extends LightningElement {
     //sorting attributes
     sortBy;
     sortDirection;
+    //pagination attributes
+    rowNumberOffset;
+    recordsToDisplay = [];
+
     @wire(getAvailableProducts,{ordId: '$recordId'})
     wiredavailableItemData({ data, error }){
         if(data){
             let productTableData = JSON.parse( JSON.stringify( data ) );
+            let i = 1;
             productTableData = productTableData.map( row => {
+                row.rowNumber = ''+ i++;
                 return { ...row, Name: row.Product2.Name};
             })
             this.availableItemList = productTableData;
@@ -56,6 +58,10 @@ export default class AvailableProducts extends LightningElement {
 
         }
     }
+    handlePaginatorChange(event){
+        this.recordsToDisplay = event.detail;
+        this.rowNumberOffset = this.recordsToDisplay[0].rowNumber-1;
+    }
     //sorting funstions
     performColumnSorting(event){
         this.sortBy = event.detail.fieldName;
@@ -64,7 +70,7 @@ export default class AvailableProducts extends LightningElement {
     }
     // sortData function --- used for sorting 
     sortData(fieldName,direction){
-        let prodTable = JSON.parse(JSON.stringify(this.availableItemList));
+        let prodTable = JSON.parse(JSON.stringify(this.recordsToDisplay));
         //return the value sorted in the field
         let key_Value = (val) =>{
             return val[fieldName];
@@ -79,7 +85,7 @@ export default class AvailableProducts extends LightningElement {
             return isReverse * ((x>y)-(y>x));
         });
         //set the sorted data into table
-        this.availableItemList = prodTable;
+        this.recordsToDisplay = prodTable;
     }
     connectedCallback(){
         this.getOrderStatusOnLoad();
@@ -124,9 +130,7 @@ export default class AvailableProducts extends LightningElement {
             .then(result =>{
                 this.notifyToUser(result,this.labels.PRODUCT_ADD_SUCCESS_MESSAGE);
                 publish(this.messageContext,addOrderItemEvent);
-            }).catch( error =>{
-                this.notifyToUser(this.labels.ERROR_STATUS,this.labels.ERROR_MESSAGE);
-            });
+            }).catch( error =>{console.log('Warning!')});
         }
     }
 

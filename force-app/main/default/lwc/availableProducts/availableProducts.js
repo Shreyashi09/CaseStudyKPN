@@ -104,7 +104,7 @@ export default class AvailableProducts extends LightningElement {
                 this.isHideColumnCheckbox = false;
             }
         }).catch(error =>{
-            console.log('error is ------>'+JSON.parse( JSON.stringify( error ) ));
+            console.log('error ----->');
         });
     }
     getSelectedProducts(event){

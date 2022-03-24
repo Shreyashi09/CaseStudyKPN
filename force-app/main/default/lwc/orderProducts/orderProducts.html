@@ -1,3 +1,10 @@
+<!--
+  @description       : This components is used for Order Products. 
+  @author            : Shreyashi Sarkar
+  @group             :
+  @last modified on  : 03-24-2022
+  @last modified by  : Shreyashi Sarkar
+-->
 <template>
     <div class="slds-grid slds-p-bottom_x-small">
         <div class="slds-col">
@@ -15,13 +22,8 @@
     <div class="slds-grid">
         <div class="slds-col">
             <template if:true={isOrderItemsAvailable}>
-                <c-pagination-custom records={orderItemList} 
-                    total-records={orderItemList.length}
-                    onpaginatorchange={handlePaginatorChange}>
-                </c-pagination-custom>
-
                 <lightning-datatable 
-                    data={recordsToDisplay} 
+                    data={orderItemList} 
                     columns={columns} 
                     key-field="Id"
                     hide-checkbox-column="true"

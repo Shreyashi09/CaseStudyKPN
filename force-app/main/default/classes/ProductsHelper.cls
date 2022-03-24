@@ -1,3 +1,9 @@
+/**
+ * description       : Helper class contains all DML functions
+ * author            : Shreyashi Sarkar
+ * last modified on  : 03-24-2022
+ * last modified by  : Shreyashi Sarkar
+**/
 public class ProductsHelper {
     private static ProductsHelper instance = null;
     public static ProductsHelper getInstance(){
@@ -61,6 +67,16 @@ public class ProductsHelper {
         Map<Id,OrderItem> itemsByPB = new Map<Id,OrderItem>();
         String status = '';
         try {
+            // when new order with zero Order Item
+            if(existingItems.size() ==0){
+                Order orderNew = getOrder(OrderId);
+                if(orderNew.Pricebook2Id == null){
+                    PricebookEntry pbe = [SELECT Pricebook2Id FROM PricebookEntry where pricebook2.name = 'Standard' WITH SECURITY_ENFORCED LIMIT 1];     
+                    orderNew.Pricebook2Id = pbe.Pricebook2Id;
+                }
+                update orderNew;
+            }
+            
             for(OrderItem item : existingItems){
                 itemsByPB.put(item.PricebookEntryId,item);
             }
@@ -68,7 +84,6 @@ public class ProductsHelper {
                 for(PricebookEntry pB : priceBookList){
                     if(itemsByPB.keySet().contains(pB.Id)){
                         itemsByPB.get(pB.Id).Quantity ++;
-                        system.debug('existing item---->');
                         itemsToBeAdded.add(itemsByPB.get(pB.Id));
                         continue;
                     }
@@ -92,7 +107,7 @@ public class ProductsHelper {
         return status; 
     }
     public Order getOrder(String orderId){
-        Order ord = [SELECT ID,STATUS FROM ORDER WHERE ID= :orderId WITH SECURITY_ENFORCED];
+        Order ord = [SELECT ID,STATUS,Pricebook2Id FROM ORDER WHERE ID= :orderId WITH SECURITY_ENFORCED];
         return ord;
     }
 }

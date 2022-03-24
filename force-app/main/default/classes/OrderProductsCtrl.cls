@@ -1,3 +1,9 @@
+/**
+ * description       : This class is for orderProducts
+ * author            : Shreyashi Sarkar
+ * last modified on  : 03-24-2022
+ * last modified by  : Shreyashi Sarkar
+**/
 public with sharing class OrderProductsCtrl {
     @AuraEnabled public static Order order {get;set;}
     @AuraEnabled public static String response {get;set;}
@@ -5,7 +11,6 @@ public with sharing class OrderProductsCtrl {
     @AuraEnabled
     public static List<OrderItem> getOrderItemsList(String ordId){
         ProductsHelper phInstance = ProductsHelper.getInstance();
-        system.debug('from order ctrl and ord id ---------->'+ordId);
         return phInstance.getOrderItemsFromOrder(ordId);
     }
     @AuraEnabled
@@ -17,7 +22,6 @@ public with sharing class OrderProductsCtrl {
     @AuraEnabled
     public static Order getOrder(String orderId){
         ProductsHelper phInstance = ProductsHelper.getInstance();
-        system.debug('from getOrder method -------->'+phInstance.getOrder(orderId));
         order= phInstance.getOrder(orderId);
         return order;
     }

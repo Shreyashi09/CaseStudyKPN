@@ -1,3 +1,9 @@
+/**
+ * description       : Controller class of the LWC availableProducts
+ * author            : Shreyashi Sarkar
+ * last modified on  : 03-24-2022
+ * last modified by  : Shreyashi Sarkar
+**/
 public with sharing class AvailableProductsCtrl {
     @AuraEnabled public static Order order {get;set;}
     @AuraEnabled public static String status {get;set;}

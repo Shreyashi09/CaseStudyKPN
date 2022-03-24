@@ -1,6 +1,6 @@
 import { LightningElement, api, track} from 'lwc';
 
-const recordsPerPage = [5,10,25,50,100];
+const recordsPerPage = [15,50,100];
 const pageNumber = 1;
 const showIt = 'visibility:visible';
 const hideIt = 'visibility:hidden'; //visibility keeps the component space, but display:none doesn't

@@ -1,5 +1,5 @@
 /**
- * description       : This class is for orderProducts
+ * description       : This class is for orderProducts LWC
  * author            : Shreyashi Sarkar
  * last modified on  : 03-24-2022
  * last modified by  : Shreyashi Sarkar

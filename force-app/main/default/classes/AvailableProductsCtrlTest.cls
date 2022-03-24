@@ -1,5 +1,5 @@
 /**
- * description       : Test class for AvailableProductsCtrl
+ * description       : Test class is for AvailableProductsCtrl
  * author            : Shreyashi Sarkar
  * last modified on  : 03-24-2022
  * last modified by  : Shreyashi Sarkar
@@ -21,11 +21,39 @@ public class AvailableProductsCtrlTest {
         item1.PricebookEntryId = testPriceBook.Id;
         item1.UnitPrice = 200;
         insert item1;
+       	//create test data for Product2 and PriceBook for addPrdoucts method.
+        Product2 testProductNew =  new Product2();
+        testProductNew.Name = 'Test New Product';
+        testProductNew.Description = 'This is used for addProducts method';
+        testProductNew.ProductCode = 'Test1010';
+        testProductNew.isActive = true;
+        insert testProductNew;
+
+        Id stdNewPriceBookRecId = Test.getStandardPricebookId();
+        PricebookEntry priceBookNew = new PricebookEntry();
+        priceBookNew.Pricebook2Id = stdNewPriceBookRecId;
+        priceBookNew.Product2Id=testProductNew.Id;
+        priceBookNew.UnitPrice=2020;
+        priceBookNew.IsActive=true;
+        priceBookNew.UseStandardPrice = false;
+        insert priceBookNew;
+    
+    }
+    @isTest
+    static void addProductsWithExistingOrderItem(){
+        Test.startTest();
+        PricebookEntry pB = [SELECT ID FROM PricebookEntry LIMIT 1];
+        List<PricebookEntry> pbList = new List<PricebookEntry>();
+        pbList.add(pB);
+        Order ord = [SELECT ID FROM ORDER LIMIT 1];
+        String result = AvailableProductsCtrl.addProducts(pbList,ord.Id);
+        system.assertEquals('Success',result,'PASS');
+        Test.stopTest();
     }
     @isTest
     static void addProducts(){
         Test.startTest();
-        PricebookEntry pB = [SELECT ID FROM PricebookEntry LIMIT 1];
+        PricebookEntry pB = [SELECT ID,UnitPrice FROM PricebookEntry WHERE UnitPrice= 2020 LIMIT 1];
         List<PricebookEntry> pbList = new List<PricebookEntry>();
         pbList.add(pB);
         Order ord = [SELECT ID FROM ORDER LIMIT 1];
